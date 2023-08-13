@@ -1,29 +1,58 @@
-from telegram import Update, InputTextMessageContent
-from telegram.ext import Updater, CommandHandler, CallbackContext, InlineQueryHandler
-from telegram.inline.queryresult import InlineQueryResultArticle
+<?php
+// Token bot Anda dari BotFather
+define('BOT_TOKEN', '6315172994:AAE-nSTwK6xgewRkiybt2YGPvZ8kBZDzbrw');
 
-TOKEN = "6315172994:AAE-nSTwK6xgewRkiybt2YGPvZ8kBZDzbrw"
+// Fungsi untuk mengirim pesan
+function sendMessage($chatID, $message, $replyMarkup = null) {
+    $url = 'https://api.telegram.org/bot' . BOT_TOKEN . '/sendMessage';
+    $data = array('chat_id' => $chatID, 'text' => $message, 'reply_markup' => $replyMarkup);
+    $options = array(
+        'http' => array(
+            'method'  => 'POST',
+            'content' => http_build_query($data),
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n"
+        )
+    );
+    $context  = stream_context_create($options);
+    file_get_contents($url, false, $context);
+}
 
-def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Halo! Saya bot gabut.")
+// Mendapatkan input dari pengguna
+$update = json_decode(file_get_contents("php://input"), TRUE);
+$chatID = $update['message']['chat']['id'];
+$message = $update['message']['text'];
 
-def options(update: Update, context: CallbackContext) -> None:
-    keyboard = [
-        [InlineQueryResultArticle(id="1", title="Opsi 1", input_message_content=InputTextMessageContent("Anda memilih opsi 1."))],
-        [InlineQueryResultArticle(id="2", title="Opsi 2", input_message_content=InputTextMessageContent("Anda memilih opsi 2."))],
-        [InlineQueryResultArticle(id="3", title="Opsi 3", input_message_content=InputTextMessageContent("Anda memilih opsi 3."))]
-    ]
-    update.inline_query.answer(keyboard)
+// Daftar respon acak
+$responses = array(
+    "Halo! Bagaimana kabarmu?",
+    "Apa kabar?",
+    "Sedang apa?",
+    "Punya rencana apa hari ini?",
+    "Hobi kamu apa?",
+    "Aku suka berbicara tentang cuaca.",
+    "Ada yang menarik yang terjadi baru-baru ini?"
+);
 
-def main():
-    updater = Updater(token=TOKEN, use_context=True)
-    dispatcher = updater.dispatcher
-    
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("options", options))
-    
-    updater.start_polling()
-    updater.idle()
+// Tombol inline
+$inlineKeyboard = json_encode(array(
+    'inline_keyboard' => array(
+        array(
+            array('text' => 'Halo', 'callback_data' => 'halo'),
+            array('text' => 'Apa kabar?', 'callback_data' => 'apa_kabar')
+        )
+    )
+));
 
-if __name__ == "__main__":
-    main()
+// Menentukan respon
+if (strtolower($message) == "/start") {
+    $response = "Halo! Aku adalah bot gabut. Apa yang ingin kamu tanyakan?";
+} elseif (strtolower($message) == "/options") {
+    sendMessage($chatID, "Pilih opsi:", $inlineKeyboard);
+    exit;
+} else {
+    $response = $responses[array_rand($responses)];
+}
+
+// Mengirim respon
+sendMessage($chatID, $response);
+?>
