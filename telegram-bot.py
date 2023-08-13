@@ -1,7 +1,5 @@
-import requests
-from telegram import Update
+from telegram import Update, InputTextMessageContent
 from telegram.ext import Updater, CommandHandler, CallbackContext, InlineQueryHandler
-from telegram.inline.inputtextmessagecontent import InputTextMessageContent
 from telegram.inline.queryresult import InlineQueryResultArticle
 
 TOKEN = "6315172994:AAE-nSTwK6xgewRkiybt2YGPvZ8kBZDzbrw"
@@ -11,7 +9,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 def options(update: Update, context: CallbackContext) -> None:
     keyboard = [
-        [InlineQueryResultArticle(id="1", title="Halo Nyet", input_message_content=InputTextMessageContent("Anda memilih opsi 1."))],
+        [InlineQueryResultArticle(id="1", title="Opsi 1", input_message_content=InputTextMessageContent("Anda memilih opsi 1."))],
         [InlineQueryResultArticle(id="2", title="Opsi 2", input_message_content=InputTextMessageContent("Anda memilih opsi 2."))],
         [InlineQueryResultArticle(id="3", title="Opsi 3", input_message_content=InputTextMessageContent("Anda memilih opsi 3."))]
     ]
